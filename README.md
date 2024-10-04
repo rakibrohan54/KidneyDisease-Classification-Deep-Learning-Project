@@ -20,16 +20,16 @@
 STEPS:
 Clone the repository
 ```bash
-https://github.com/rakibrohan54/Kidney-Disease-Classification-Deep-Learning-Project.git
+https://github.com/rakibrohan54/KidneyDisease-Classification-Deep-Learning-Project.git
 ```
 STEP 01- Create a conda environment after opening the repository
 ```bash
-conda create -n cnncls python=3.8 -y
+python -m venv venv
 ```
 
 
 ```bash
-conda activate cnncls
+.\venv\Scripts\activate
 ```
 
 STEP 02- install the requirements
@@ -45,3 +45,15 @@ cmd
 
 dagshub
 
+MLFLOW_TRACKING_URI=https://dagshub.com/rakibrohan54/KidneyDisease-Classification-Deep-Learning-Project.mlflow
+MLFLOW_TRACKING_USERNAME=rakibrohan54
+MLFLOW_TRACKING_PASSWORD=68d2276306699e6c4c999c53f8494162ae6ca912
+python script.py
+
+Run as to env veriables
+
+```bash
+set MLFLOW_TRACKING_URI=https://dagshub.com/rakibrohan54/KidneyDisease-Classification-Deep-Learning-Project.mlflow
+set MLFLOW_TRACKING_USERNAME=rakibrohan54
+set MLFLOW_TRACKING_PASSWORD=68d2276306699e6c4c999c53f8494162ae6ca912
+```
