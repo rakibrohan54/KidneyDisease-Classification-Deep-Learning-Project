@@ -36,3 +36,12 @@ STEP 02- install the requirements
 ```bash
 pip install -r requirements.txt
 ```
+MLflow
+
+[Documentation](https://mlflow.org/docs/latest/index.html)
+
+cmd
+- mlflow ui
+
+dagshub
+
