@@ -10,7 +10,6 @@ class PrepareBaseModel:
     def __init__(self, config: PrepareBaseModelConfig):
         self.config = config
 
-    
     def get_base_model(self):
         self.model = tf.keras.applications.vgg16.VGG16(
             input_shape=self.config.params_image_size,
@@ -19,8 +18,6 @@ class PrepareBaseModel:
         )
 
         self.save_model(path=self.config.base_model_path, model=self.model)
-
-    
 
     @staticmethod
     def _prepare_full_model(model, classes, freeze_all, freeze_till, learning_rate):
@@ -42,16 +39,18 @@ class PrepareBaseModel:
             outputs=prediction
         )
 
+        # Recreate the optimizer
+        optimizer = tf.keras.optimizers.SGD(learning_rate=learning_rate)
+
         full_model.compile(
-            optimizer=tf.keras.optimizers.SGD(learning_rate=learning_rate),
+            optimizer=optimizer,
             loss=tf.keras.losses.CategoricalCrossentropy(),
             metrics=["accuracy"]
         )
 
         full_model.summary()
         return full_model
-    
-    
+
     def update_base_model(self):
         self.full_model = self._prepare_full_model(
             model=self.model,
@@ -63,8 +62,6 @@ class PrepareBaseModel:
 
         self.save_model(path=self.config.updated_base_model_path, model=self.full_model)
 
-    
-        
     @staticmethod
     def save_model(path: Path, model: tf.keras.Model):
         model.save(path)
