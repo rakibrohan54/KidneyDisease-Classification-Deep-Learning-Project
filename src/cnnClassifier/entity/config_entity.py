@@ -17,7 +17,6 @@ class PrepareBaseModelConfig:
     base_model_path: Path
     updated_base_model_path: Path
     params_image_size: list
-    params_learning_rate: float
     params_include_top: bool
     params_weights: str
     params_classes: int
@@ -35,7 +34,6 @@ class TrainingConfig:
     params_is_augmentation: bool
     params_image_size: list
     params_learning_rate: float
-
 
 
 @dataclass(frozen=True)

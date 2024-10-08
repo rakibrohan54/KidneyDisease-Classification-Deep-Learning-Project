@@ -1,7 +1,7 @@
 import tensorflow as tf
-import os
 from pathlib import Path
 import mlflow
+import os
 import mlflow.keras
 from urllib.parse import urlparse
 from cnnClassifier.entity.config_entity import EvaluationConfig
@@ -13,10 +13,9 @@ class Evaluation:
         self.config = config
 
         os.environ['MLFLOW_TRACKING_URI'] = self.config.mlflow_uri
-        os.environ['MLFLOW_TRACKING_USERNAME'] = 'rakibrohan54'
-        os.environ['MLFLOW_TRACKING_PASSWORD'] = '68d2276306699e6c4c999c53f8494162ae6ca912'
-
-
+        os.environ['MLFLOW_TRACKING_USERNAME'] = "rakibrohan54"
+        os.environ['MLFLOW_TRACKING_PASSWORD'] = "68d2276306699e6c4c999c53f8494162ae6ca912"
+   
 
     
     def _valid_generator(self):
@@ -39,7 +38,8 @@ class Evaluation:
         self.valid_generator = valid_datagenerator.flow_from_directory(
             directory=self.config.training_data,
             subset="validation",
-            shuffle=False,
+            shuffle=True,
+            class_mode='sparse',
             **dataflow_kwargs
         )
 
@@ -63,7 +63,6 @@ class Evaluation:
     def log_into_mlflow(self):
         mlflow.set_registry_uri(self.config.mlflow_uri)
         tracking_url_type_store = urlparse(mlflow.get_tracking_uri()).scheme
-        
         mlflow.set_experiment('KidneyDiseaseClassification3')
         
         with mlflow.start_run():

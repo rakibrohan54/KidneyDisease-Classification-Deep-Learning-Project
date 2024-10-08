@@ -46,7 +46,6 @@ class ConfigurationManager:
             base_model_path=Path(config.base_model_path),
             updated_base_model_path=Path(config.updated_base_model_path),
             params_image_size=self.params.IMAGE_SIZE,
-            params_learning_rate=self.params.LEARNING_RATE,
             params_include_top=self.params.INCLUDE_TOP,
             params_weights=self.params.WEIGHTS,
             params_classes=self.params.CLASSES
@@ -55,14 +54,16 @@ class ConfigurationManager:
         return prepare_base_model_config
     
 
+
+
     def get_training_config(self) -> TrainingConfig:
         training = self.config.training
         prepare_base_model = self.config.prepare_base_model
         params = self.params
         training_data = os.path.join(self.config.data_ingestion.unzip_dir, "kidney-ct-scan-image")
-        create_directories([Path(training.root_dir)])
-
-
+        create_directories([
+            Path(training.root_dir)
+        ])
 
         training_config = TrainingConfig(
             root_dir=Path(training.root_dir),
@@ -74,7 +75,8 @@ class ConfigurationManager:
             params_is_augmentation=params.AUGMENTATION,
             params_image_size=params.IMAGE_SIZE,
             params_learning_rate=params.LEARNING_RATE  # Make sure to include this
-    )
+        )
+
         return training_config
     
 

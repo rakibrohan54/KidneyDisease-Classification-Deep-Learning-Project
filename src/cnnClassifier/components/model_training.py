@@ -2,6 +2,8 @@ import os
 import urllib.request as request
 from zipfile import ZipFile
 import tensorflow as tf
+import time
+import math
 from pathlib import Path
 from cnnClassifier.entity.config_entity import TrainingConfig
 
@@ -16,8 +18,9 @@ class Training:
         )
 
     def train_valid_generator(self):
+
         datagenerator_kwargs = dict(
-            rescale=1. / 255,
+            rescale=1./255,
             validation_split=0.20
         )
 
@@ -27,6 +30,7 @@ class Training:
             interpolation="bilinear"
         )
 
+        # Validation data generator
         valid_datagenerator = tf.keras.preprocessing.image.ImageDataGenerator(
             **datagenerator_kwargs
         )
@@ -34,10 +38,12 @@ class Training:
         self.valid_generator = valid_datagenerator.flow_from_directory(
             directory=self.config.training_data,
             subset="validation",
-            shuffle=False,
+            shuffle=True,
+            class_mode='sparse',
             **dataflow_kwargs
         )
 
+        # Train data generator with augmentation if enabled
         if self.config.params_is_augmentation:
             train_datagenerator = tf.keras.preprocessing.image.ImageDataGenerator(
                 rotation_range=40,
@@ -55,6 +61,7 @@ class Training:
             directory=self.config.training_data,
             subset="training",
             shuffle=True,
+            class_mode='sparse',  # This should be set to 'sparse'
             **dataflow_kwargs
         )
 
@@ -63,24 +70,27 @@ class Training:
         model.save(path)
 
     def train(self):
-        # Ensure the model is compiled after any changes
+        # Compile the model before training
         self.model.compile(
-            optimizer=tf.keras.optimizers.SGD(learning_rate=self.config.params_learning_rate),
-            loss=tf.keras.losses.CategoricalCrossentropy(),
+            optimizer=tf.keras.optimizers.Adam(learning_rate=self.config.params_learning_rate),
+            loss=tf.keras.losses.SparseCategoricalCrossentropy(),
             metrics=["accuracy"]
         )
 
-        self.steps_per_epoch = self.train_generator.samples // self.train_generator.batch_size
-        self.validation_steps = self.valid_generator.samples // self.valid_generator.batch_size
+        # Define steps per epoch and validation steps
+        #self.steps_per_epoch = math.ceil(self.train_generator.samples / self.train_generator.batch_size)
+        #self.validation_steps = math.ceil(self.valid_generator.samples / self.valid_generator.batch_size)
 
+        # Train the model
         self.model.fit(
             self.train_generator,
             epochs=self.config.params_epochs,
-            steps_per_epoch=self.steps_per_epoch,
-            validation_steps=self.validation_steps,
-            validation_data=self.valid_generator
+            validation_data=self.valid_generator,
+            steps_per_epoch=None,
+            validation_steps=None
         )
 
+        # Save the trained model
         self.save_model(
             path=self.config.trained_model_path,
             model=self.model
