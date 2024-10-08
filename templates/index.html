@@ -102,9 +102,10 @@
         }
 
         footer {
-            margin-top: 50px;
+            margin-top: 200px;
             color: #888;
             font-size: 14px;
+            position: relative;
         }
 
         .container {
@@ -129,6 +130,66 @@
                 opacity: 1;
             }
         }
+
+        /* Circular profile image above footer */
+        .profile-image {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid #4CAF50;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            top: -110px;
+            z-index: 3;
+            background-color: white;
+        }
+
+        .profile-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .social-links a {
+            color: white;
+            text-decoration: none;
+            margin: 0 10px;
+            padding: 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s, transform 0.2s;
+            display: inline-block;
+        }
+
+        .social-links a.github {
+            background-color: #333;
+        }
+
+        .social-links a.linkedin {
+            background-color: #0077b5;
+        }
+
+        .social-links a.kaggle {
+            background-color: #20BEFF;
+        }
+
+        .social-links a.twitter {
+            background-color: #1DA1F2;
+        }
+
+        .social-links a:hover {
+            transform: translateY(-3px);
+        }
+
+        /* Loading text style */
+        #loading {
+            display: none;
+            font-size: 20px;
+            color: #4CAF50;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
@@ -146,8 +207,32 @@
         
         <button id="predictButton" onclick="predict()">Predict</button>
 
+        <div id="loading">Loading...</div> <!-- Loading feature added here -->
         <div class="result" id="result"></div>
     </div>
+
+    <footer>
+        <!-- Circular profile image -->
+        <div class="profile-image">
+            <img src="https://avatars.githubusercontent.com/u/71736510?v=4" alt="Author Profile">
+        </div>
+        <p>Authored by: <strong>MD. RAKIBUL ISLAM</strong></p>
+        <div class="social-links">
+            <a href="https://github.com/rakibrohan54" target="_blank" class="github">
+                <i class="fab fa-github"></i> GitHub
+            </a>
+            <a href="https://www.linkedin.com/in/rakibrohan54/" target="_blank" class="linkedin">
+                <i class="fab fa-linkedin"></i> LinkedIn
+            </a>
+            <a href="https://www.kaggle.com/rakibrohan12" target="_blank" class="kaggle">
+                <i class="fab fa-kaggle"></i> Kaggle
+            </a>
+            <a href="https://x.com/rakibrohan54" target="_blank" class="twitter">
+                <i class="fab fa-twitter"></i> Twitter
+            </a>
+        </div>
+        <p>&copy; 2024 rakibrohan54. All rights reserved.</p>
+    </footer>
 
     <script>
         function previewImage(event) {
@@ -159,11 +244,7 @@
             reader.onload = function() {
                 preview.src = reader.result;
                 imagePreview.style.display = 'block';
-                imagePreview.style.transform = 'scale(1.1)';
-                setTimeout(() => {
-                    imagePreview.style.transform = 'scale(1)';
-                }, 300);
-            }
+            };
 
             if (file) {
                 reader.readAsDataURL(file);
@@ -173,6 +254,7 @@
         async function predict() {
             const fileInput = document.getElementById('fileInput');
             const resultDiv = document.getElementById('result');
+            const loadingIndicator = document.getElementById('loading');
 
             if (fileInput.files.length === 0) {
                 resultDiv.innerText = 'Please select an image!';
@@ -183,6 +265,8 @@
             reader.readAsDataURL(fileInput.files[0]);
             reader.onloadend = async function() {
                 const base64Image = reader.result.split(',')[1];
+                
+                loadingIndicator.style.display = 'block'; // Show loading indicator
 
                 const response = await fetch('/predict', {
                     method: 'POST',
@@ -192,13 +276,15 @@
                     body: JSON.stringify({ image: base64Image }),
                 });
 
+                loadingIndicator.style.display = 'none'; // Hide loading indicator
+
                 if (response.ok) {
                     const data = await response.json();
                     resultDiv.innerText = 'Prediction: ' + data[0].image;
                 } else {
                     resultDiv.innerText = 'Error occurred while predicting.';
                 }
-            }
+            };
         }
     </script>
 
